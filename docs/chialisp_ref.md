@@ -113,6 +113,44 @@ returns
 
 \- \- \- \- \- \- \-
 
+this takes a list and returns a list containing the first item in the original list:
+
+'(e (q (c (f (a)) (q ()))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
+
+e.g.  
+'(e (q (c (f (a)) (q ()))) (a))' '(123 456 789)'  
+returns  
+(123)
+
+
+\- \- \- \- \- \- \-
+
+
+this takes a list and returns a list containing the second item in the original list:
+
+'(e (q (c (f (r (a))) (q ()))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
+
+e.g.  
+'(e (q (c (f (r (a))) (q ()))) (a))' '(123 456 789)'  
+returns  
+(456)
+
+
+\- \- \- \- \- \- \-
+
+
+this takes a list and returns a list containing the third item in the original list:
+
+'(e (q (c (f (r (r (a)))) (q ()))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
+
+e.g.  
+'(e (q (c (f (r (r (a)))) (q ()))) (a))' '(123 456 789)'  
+returns  
+(789)
+
+
+\- \- \- \- \- \- \-
+
 
 this re-creates the list and returns it:
 
