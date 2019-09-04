@@ -14,7 +14,8 @@
 \- \- \- \- \- \- \-
 
 
-this builds a list of one item:  
+this builds a list of one item:
+
 (c (q ITEM) (q () ) )
 
 e.g.  
@@ -26,7 +27,8 @@ returns
 \- \- \- \- \- \- \-
 
 
-this builds a list of two items:  
+this builds a list of two items:
+
 (c (q ITEM1) (c (q ITEM2) (q () ) ) )
 
 e.g.  
@@ -38,7 +40,8 @@ returns
 \- \- \- \- \- \- \-
 
 
-this builds a list of three items:  
+this builds a list of three items:
+
 (c (q ITEM1) (c (q ITEM2) (c (q ITEM3) (q () ) ) ) )
 
 e.g.  
@@ -50,7 +53,8 @@ returns
 \- \- \- \- \- \- \-
 
 
-this builds a list of two lists:  
+this builds a list of two lists:
+
 (c LIST1 (c LIST2 (q () ) ) )
 
 e.g.  
@@ -72,11 +76,12 @@ returns
 
 
 this returns the first item in a list:
+
 '(e (q (f (a))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
-e.g.
-'(e (q (f (a))) (a))' '(123 456 789)'
-returns
+e.g.  
+'(e (q (f (a))) (a))' '(123 456 789)'  
+returns  
 123
 
 
@@ -84,11 +89,12 @@ returns
 
 
 this returns the second item in a list:
-'(e (q (f (r (a)))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
-e.g.
-'(e (q (f (r (a)))) (a))' '(123 456 789)'
-returns
+'(e (q (f (r (a)))) (a))' '(ITEM1 ITEM2 ... ITEMN)'  
+
+e.g.  
+'(e (q (f (r (a)))) (a))' '(123 456 789)'  
+returns  
 456
 
 
@@ -96,18 +102,20 @@ returns
 
 
 this returns the third item in a list:
+
 '(e (q (f (r (r (a))))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
-e.g.
-'(e (q (f (r (r (a))))) (a))' '(123 456 789)'
-returns
+e.g.  
+'(e (q (f (r (r (a))))) (a))' '(123 456 789)'  
+returns  
 789
 
 
 \- \- \- \- \- \- \-
 
 
-this re-creates the list and returns it:  
+this re-creates the list and returns it:
+
 '(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (f (f (r (a)))) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
 
 e.g.  
@@ -119,7 +127,8 @@ returns
 \- \- \- \- \- \- \-
 
 
-this takes a list and returns a list of lists, where the first inner list is the original list, the next inner list is the original list with the first item removed, the next inner list is the original list with the first two items removed, etc., and the last list contains only the last item in the original list:  
+this takes a list and returns a list of lists, where the first inner list is the original list, the next inner list is the original list with the first item removed, the next inner list is the original list with the first two items removed, etc., and the last list contains only the last item in the original list:
+
 '(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (f (r (a))) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
 
 e.g.  
@@ -140,7 +149,8 @@ returns
 \- \- \- \- \- \- \-
 
 
-this takes a list and returns a list of the squares of each item in the original list:  
+this takes a list and returns a list of the squares of each item in the original list:
+
 '(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (* (f (f (r (a)))) (f (f (r (a)))) ) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
 
 e.g.  
@@ -152,7 +162,8 @@ returns
 \- \- \- \- \- \- \-
 
 
-this takes a list and returns a list of the sums of each item in the original list and some constant value:  
+this takes a list and returns a list of the sums of each item in the original list and some constant value:
+
 '(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (+ (f (f (r (a)))) (q VALUETOADD) ) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
 
 e.g.  
@@ -174,6 +185,7 @@ returns
 
 
 this takes a list of items and returns a list of lists containing each item with some prefix:
+
 wrapper:  
 (e (q (e (f (a)) (a))) (c (q (PROGRAM)) (c (f (a)) (q ()))))  
 program:  
@@ -188,7 +200,8 @@ returns
 \- \- \- \- \- \- \-
 
 
-this takes a list of lists and returns a list containing lists which each contain one item from the second list along with some prefix:  
+this takes a list of lists and returns a list containing lists which each contain one item from the second list along with some prefix:
+
 wrapper:  
 (e (q (e (f (a)) (a))) (c (q (PROGRAM)) (c (f (r (a))) (q ()))))  
 program:  
@@ -212,7 +225,8 @@ returns
 \- \- \- \- \- \- \-
 
 
-this checks to see if the first item in a list is equal to some value; if it is, then it returns a list containing the second value in the list, and if it isn't, then it returns a list containing the third value in the list:  
+this checks to see if the first item in a list is equal to some value; if it is, then it returns a list containing the second value in the list, and if it isn't, then it returns a list containing the third value in the list:
+
 '(e (i (= (f (a)) (q VALUETOCHECK) ) (q (c (f (r (a))) (q () ) )) (q (c (f (r (r (a)))) (q () ) ))) (a))' '(ITEM1 ITEM2 ITEM3)'
 
 e.g.  
@@ -229,7 +243,8 @@ returns
 \- \- \- \- \- \- \-
 
 
-this checks to see if the second item in a list is equal to some value; if it is, then it returns a list containing the third value in the list, and if it isn't, then it returns a list containing a specified value:  
+this checks to see if the second item in a list is equal to some value; if it is, then it returns a list containing the third value in the list, and if it isn't, then it returns a list containing a specified value:
+
 '(e (i (= (f (r (a))) (q VALUETOCHECK) ) (q (c (f (r (r (a)))) (q () ) )) (q (c (q SPECIFIEDVALUE) (q () ) ))) (a))' '(ITEM1 ITEM2 ITEM3)'
 
 e.g.  
