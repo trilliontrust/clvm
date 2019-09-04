@@ -13,7 +13,6 @@
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this builds a list of one item:  
 (c (q ITEM) (q () ) )
@@ -23,11 +22,9 @@ e.g.
 returns  
 (123)
 
-&nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this builds a list of two items:  
 (c (q ITEM1) (c (q ITEM2) (q () ) ) )
@@ -37,11 +34,9 @@ e.g.
 returns  
 (123 456)
 
-&nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this builds a list of three items:  
 (c (q ITEM1) (c (q ITEM2) (c (q ITEM3) (q () ) ) ) )
@@ -51,11 +46,9 @@ e.g.
 returns  
 (123 456 789)
 
-&nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this builds a list of two lists:  
 (c LIST1 (c LIST2 (q () ) ) )
@@ -71,13 +64,12 @@ returns
 
 &nbsp;  
 
-// using eval //
+// manipulating lists //
 
 &nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this returns the first item in the list:  
 (e (f (a)) (a))
@@ -87,11 +79,9 @@ e.g.
 returns  
 123
 
-&nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this returns the second item in the list:  
 (e (f (r (a))) (a))
@@ -101,11 +91,9 @@ e.g.
 returns  
 456
 
-&nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this returns the third item in a list:  
 (e (f (r (r (a)))) (a))
@@ -115,19 +103,9 @@ e.g.
 returns  
 789
 
-&nbsp;  
-
----------------------------------------------------------------
-
-&nbsp;  
-
-// manipulating items in a list //
-
-&nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this re-creates the list and returns it:  
 '(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (f (f (r (a)))) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
@@ -137,11 +115,9 @@ e.g.
 returns  
 (123 456 789)
 
-&nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this takes a list and returns a list of lists, where the first inner list is the original list, the next inner list is the original list with the first item removed, the next inner list is the original list with the first two items removed, etc., and the last list contains only the last item in the original list:  
 '(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (f (r (a))) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
@@ -153,9 +129,16 @@ returns
 
 &nbsp;  
 
-\- \- \- \- \- \- \-
+---------------------------------------------------------------
 
 &nbsp;  
+
+// manipulating items in lists //
+
+&nbsp;  
+
+\- \- \- \- \- \- \-
+
 
 this takes a list and returns a list of the squares of each item in the original list:  
 '(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (* (f (f (r (a)))) (f (f (r (a)))) ) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
@@ -165,11 +148,9 @@ e.g.
 returns  
 (15129 207936 622521)
 
-&nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this takes a list and returns a list of the sums of each item in the original list and some constant value:  
 '(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (+ (f (f (r (a)))) (q VALUETOADD) ) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
@@ -191,7 +172,6 @@ returns
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this takes a list of items and returns a list of lists containing each item with some prefix:
 wrapper:  
@@ -204,11 +184,9 @@ e.g.
 returns  
 ((33333 123) (33333 456) (33333 789))
 
-&nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this takes a list of lists and returns a list containing lists which each contain one item from the second list along with some prefix:  
 wrapper:  
@@ -233,7 +211,6 @@ returns
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this checks to see if the first item in a list is equal to some value; if it is, then it returns a list containing the second value in the list, and if it isn't, then it returns a list containing the third value in the list:  
 '(e (i (= (f (a)) (q VALUETOCHECK) ) (q (c (f (r (a))) (q () ) )) (q (c (f (r (r (a)))) (q () ) ))) (a))' '(ITEM1 ITEM2 ITEM3)'
@@ -248,11 +225,9 @@ e.g.
 returns  
 (789)
 
-&nbsp;  
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 this checks to see if the second item in a list is equal to some value; if it is, then it returns a list containing the third value in the list, and if it isn't, then it returns a list containing a specified value:  
 '(e (i (= (f (r (a))) (q VALUETOCHECK) ) (q (c (f (r (r (a)))) (q () ) )) (q (c (q SPECIFIEDVALUE) (q () ) ))) (a))' '(ITEM1 ITEM2 ITEM3)'
@@ -279,7 +254,6 @@ returns
 
 \- \- \- \- \- \- \-
 
-&nbsp;  
 
 puzzle_for_pk
 
