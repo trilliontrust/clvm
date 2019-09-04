@@ -184,7 +184,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this takes a list of items and returns a list of lists containing each item with some prefix:
+this takes a list of lists and returns a list of lists containing each item from the first list along with some prefix:
 
 wrapper:  
 (e (q (e (f (a)) (a))) (c (q (PROGRAM)) (c (f (a)) (q ()))))  
@@ -192,7 +192,7 @@ program:
 (e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (c (q PREFIX) (c (f (f (r (a)))) (q ()))) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a))
 
 e.g.  
-'(e (q (e (f (a)) (a))) (c (q (e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (c (q 33333) (c (f (f (r (a)))) (q ()))) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a))) (c (f (a)) (q ()))))' '((123 456 789))'  
+'(e (q (e (f (a)) (a))) (c (q (e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (c (q 33333) (c (f (f (r (a)))) (q ()))) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a))) (c (f (a)) (q ()))))' '((123 456 789) (321 654 987))'  
 returns  
 ((33333 123) (33333 456) (33333 789))
 
@@ -200,7 +200,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this takes a list of lists and returns a list containing lists which each contain one item from the second list along with some prefix:
+this takes a list of lists and returns a list of lists containing each item from the second list along with some prefix:
 
 wrapper:  
 (e (q (e (f (a)) (a))) (c (q (PROGRAM)) (c (f (r (a))) (q ()))))  
