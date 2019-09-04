@@ -1,5 +1,5 @@
 
-chialisp reference
+**chialisp reference**
 
 
 ---------------------------------------------------------------
@@ -8,7 +8,7 @@ chialisp reference
 // building lists //
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this builds a list of one item:  
@@ -20,7 +20,7 @@ returns
 (123)
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this builds a list of two items:  
@@ -32,7 +32,7 @@ returns
 (123 456)
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this builds a list of three items:  
@@ -44,7 +44,7 @@ returns
 (123 456 789)
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this builds a list of two lists:  
@@ -62,7 +62,7 @@ returns
 // using eval //
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this returns the first item in the list:  
@@ -74,7 +74,7 @@ returns
 123
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this returns the second item in the list:  
@@ -86,7 +86,7 @@ returns
 456
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this returns the third item in a list:  
@@ -104,7 +104,7 @@ returns
 // manipulating items in a list //
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this re-creates the list and returns it:  
@@ -116,7 +116,7 @@ returns
 (123 456 789)
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this takes a list and returns a list of lists, where the first inner list is the original list, the next inner list is the original list with the first item removed, the next inner list is the original list with the first two items removed, etc., and the last list contains only the last item in the original list:  
@@ -128,7 +128,7 @@ returns
 ((123 456 789) (456 789) (789))
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this takes a list and returns a list of the squares of each item in the original list:  
@@ -140,7 +140,7 @@ returns
 (15129 207936 622521)
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this takes a list and returns a list of the sums of each item in the original list and some constant value:  
@@ -158,7 +158,7 @@ returns
 // adding a prefix to items in a list //
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this takes a list of items and returns a list of lists containing each item with some prefix:
@@ -173,7 +173,7 @@ returns
 ((33333 123) (33333 456) (33333 789))
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this takes a list of lists and returns a list containing lists which each contain one item from the second list along with some prefix:  
@@ -194,7 +194,7 @@ returns
 // checking lists for conditions //
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this checks to see if the first item in a list is equal to some value; if it is, then it returns a list containing the second value in the list, and if it isn't, then it returns a list containing the third value in the list:  
@@ -211,7 +211,7 @@ returns
 (789)
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 this checks to see if the second item in a list is equal to some value; if it is, then it returns a list containing the third value in the list, and if it isn't, then it returns a list containing a specified value:  
@@ -235,7 +235,7 @@ returns
 // what puzzles look like //
 
 
-:::::::::
+\- \- \- \- \- \- \-
 
 
 puzzle_for_pk
