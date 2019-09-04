@@ -113,7 +113,7 @@ returns
 
 \- \- \- \- \- \- \-
 
-this takes a list and returns a list containing the first item in the original list:
+this returns a list containing the first item in the original list:
 
 '(e (q (c (f (a)) (q ()))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
@@ -126,7 +126,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this takes a list and returns a list containing the second item in the original list:
+this returns a list containing the second item in the original list:
 
 '(e (q (c (f (r (a))) (q ()))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
@@ -139,7 +139,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this takes a list and returns a list containing the third item in the original list:
+this returns a list containing the third item in the original list:
 
 '(e (q (c (f (r (r (a)))) (q ()))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
