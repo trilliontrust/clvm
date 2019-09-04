@@ -1,15 +1,19 @@
 
 **chialisp reference**
 
-  
+&nbsp;  
+
 ---------------------------------------------------------------
 
+&nbsp;  
 
 // building lists //
 
+&nbsp;  
 
 \- \- \- \- \- \- \-
 
+&nbsp;  
 
 this builds a list of one item:  
 (c (q ITEM) (q () ) )
