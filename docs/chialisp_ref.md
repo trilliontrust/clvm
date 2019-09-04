@@ -75,7 +75,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this returns the first item in a list:
+this takes a list and returns the first item in that list:
 
 '(e (q (f (a))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
@@ -88,7 +88,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this returns the second item in a list:
+this takes a list and returns the second item in that list:
 
 '(e (q (f (r (a)))) (a))' '(ITEM1 ITEM2 ... ITEMN)'  
 
@@ -101,7 +101,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this returns the third item in a list:
+this takes a list and returns the third item in that list:
 
 '(e (q (f (r (r (a))))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
@@ -113,7 +113,8 @@ returns
 
 \- \- \- \- \- \- \-
 
-this returns a list containing the first item in the original list:
+
+this takes a list and returns a list containing the first item in the original list:
 
 '(e (q (c (f (a)) (q ()))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
@@ -126,7 +127,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this returns a list containing the second item in the original list:
+this takes a list and returns a list containing the second item in the original list:
 
 '(e (q (c (f (r (a))) (q ()))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
@@ -139,7 +140,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this returns a list containing the third item in the original list:
+this takes a list and returns a list containing the third item in the original list:
 
 '(e (q (c (f (r (r (a)))) (q ()))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
@@ -152,7 +153,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this re-creates the list and returns it:
+this takes a list and re-creates that list and returns it:
 
 '(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (f (f (r (a)))) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
 
@@ -263,7 +264,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this checks to see if the first item in a list is equal to some value; if it is, then it returns a list containing the second value in the list, and if it isn't, then it returns a list containing the third value in the list:
+this takes a list and checks to see if the first item in that list is equal to some value; if it is, then it returns a list containing the second value in the original list, and if it isn't, then it returns a list containing the third value in the original list:
 
 '(e (i (= (f (a)) (q VALUETOCHECK) ) (q (c (f (r (a))) (q () ) )) (q (c (f (r (r (a)))) (q () ) ))) (a))' '(ITEM1 ITEM2 ITEM3)'
 
@@ -281,7 +282,7 @@ returns
 \- \- \- \- \- \- \-
 
 
-this checks to see if the second item in a list is equal to some value; if it is, then it returns a list containing the third value in the list, and if it isn't, then it returns a list containing a specified value:
+this takes a list and checks to see if the second item in that list is equal to some value; if it is, then it returns a list containing the third value in the original list, and if it isn't, then it returns a list containing a specified value:
 
 '(e (i (= (f (r (a))) (q VALUETOCHECK) ) (q (c (f (r (r (a)))) (q () ) )) (q (c (q SPECIFIEDVALUE) (q () ) ))) (a))' '(ITEM1 ITEM2 ITEM3)'
 
