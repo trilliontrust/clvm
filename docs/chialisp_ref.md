@@ -16,10 +16,10 @@
 
 this builds a list of one item:
 
-(c (q ITEM) (q () ) )
+(c (q ITEM) (q ()))
 
 e.g.  
-'(c (q 123) (q () ) )'  
+'(c (q 123) (q ()))'  
 returns  
 (123)
 
@@ -29,10 +29,10 @@ returns
 
 this builds a list of two items:
 
-(c (q ITEM1) (c (q ITEM2) (q () ) ) )
+(c (q ITEM1) (c (q ITEM2) (q ())))
 
 e.g.  
-'(c (q 123) (c (q 456) (q () ) ) )'  
+'(c (q 123) (c (q 456) (q ())))'  
 returns  
 (123 456)  
 
@@ -42,10 +42,10 @@ returns
 
 this builds a list of three items:
 
-(c (q ITEM1) (c (q ITEM2) (c (q ITEM3) (q () ) ) ) )
+(c (q ITEM1) (c (q ITEM2) (c (q ITEM3) (q ()))))
 
 e.g.  
-'(c (q 123) (c (q 456) (c (q 789) (q () ) ) ) )'  
+'(c (q 123) (c (q 456) (c (q 789) (q ()))))'  
 returns  
 (123 456 789)
 
@@ -55,10 +55,10 @@ returns
 
 this builds a list of two lists:
 
-(c LIST1 (c LIST2 (q () ) ) )
+(c LIST1 (c LIST2 (q ())))
 
 e.g.  
-'(c (c (q 123) (c (q 456) (q () ) ) ) (c (c (q 321) (c (q 654) (c (q 987) (q () ) ) ) ) (q () ) ) )'  
+'(c (c (q 123) (c (q 456) (q ()))) (c (c (q 321) (c (q 654) (c (q 987) (q ())))) (q ())))'  
 returns  
 ((123 456) (321 654 987))
 
@@ -203,10 +203,10 @@ returns
 
 this takes a list and returns a list of the sums of each item in the original list and some constant value:
 
-'(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (+ (f (f (r (a)))) (q VALUETOADD) ) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
+'(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (+ (f (f (r (a)))) (q VALUETOADD)) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (ITEM1 ITEM2 ... ITEMN))'
 
 e.g.  
-'(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (+ (f (f (r (a)))) (q 500) ) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (123 456 789))'  
+'(e (f (a)) (a))' '((e (i (e (i (f (r (a))) (q (q ())) (q (q 1))) (a)) (q (q ())) (q (c (+ (f (f (r (a)))) (q 500)) (e (f (a)) (c (f (a)) (c (r (f (r (a)))) (q ()))))))) (a)) (123 456 789))'  
 returns  
 (623 956 1289)
 
@@ -266,15 +266,15 @@ returns
 
 this takes a list and checks to see if the first item in that list is equal to some value; if it is, then it returns a list containing the second value in the original list, and if it isn't, then it returns a list containing the third value in the original list:
 
-'(e (i (= (f (a)) (q VALUETOCHECK) ) (q (c (f (r (a))) (q () ) )) (q (c (f (r (r (a)))) (q () ) ))) (a))' '(ITEM1 ITEM2 ITEM3)'
+'(e (i (= (f (a)) (q VALUETOCHECK)) (q (c (f (r (a))) (q ()))) (q (c (f (r (r (a)))) (q ())))) (a))' '(ITEM1 ITEM2 ITEM3)'
 
 e.g.  
-'(e (i (= (f (a)) (q 123) ) (q (c (f (r (a))) (q () ) )) (q (c (f (r (r (a)))) (q () ) ))) (a))' '(123 456 789)'  
+'(e (i (= (f (a)) (q 123)) (q (c (f (r (a))) (q ()))) (q (c (f (r (r (a)))) (q ())))) (a))' '(123 456 789)'  
 returns  
 (456)
 
 e.g.  
-'(e (i (= (f (a)) (q 123) ) (q (c (f (r (a))) (q () ) )) (q (c (f (r (r (a)))) (q () ) ))) (a))' '(023 456 789)'  
+'(e (i (= (f (a)) (q 123)) (q (c (f (r (a))) (q ()))) (q (c (f (r (r (a)))) (q ())))) (a))' '(023 456 789)'  
 returns  
 (789)
 
@@ -284,15 +284,15 @@ returns
 
 this takes a list and checks to see if the second item in that list is equal to some value; if it is, then it returns a list containing the third value in the original list, and if it isn't, then it returns a list containing a specified value:
 
-'(e (i (= (f (r (a))) (q VALUETOCHECK) ) (q (c (f (r (r (a)))) (q () ) )) (q (c (q SPECIFIEDVALUE) (q () ) ))) (a))' '(ITEM1 ITEM2 ITEM3)'
+'(e (i (= (f (r (a))) (q VALUETOCHECK)) (q (c (f (r (r (a)))) (q ()))) (q (c (q SPECIFIEDVALUE) (q ())))) (a))' '(ITEM1 ITEM2 ITEM3)'
 
 e.g.  
-'(e (i (= (f (r (a))) (q 456) ) (q (c (f (r (r (a)))) (q () ) )) (q (c (q 99999) (q () ) ))) (a))' '(123 456 789)'  
+'(e (i (= (f (r (a))) (q 456)) (q (c (f (r (r (a)))) (q ()))) (q (c (q 99999) (q ())))) (a))' '(123 456 789)'  
 returns  
 (789)
 
 e.g.  
-'(e (i (= (f (r (a))) (q 456) ) (q (c (f (r (r (a)))) (q () ) )) (q (c (q 99999) (q () ) ))) (a))' '(123 056 789)'  
+'(e (i (= (f (r (a))) (q 456)) (q (c (f (r (r (a)))) (q ()))) (q (c (q 99999) (q ())))) (a))' '(123 056 789)'  
 returns  
 (99999)
 
