@@ -32,7 +32,7 @@ this builds a list of two items:
 e.g.  
 '(c (q 123) (c (q 456) (q () ) ) )'  
 returns  
-(123 456)
+(123 456)  
 
 
 \- \- \- \- \- \- \-
@@ -71,36 +71,36 @@ returns
 \- \- \- \- \- \- \-
 
 
-this returns the first item in the list:  
-(e (f (a)) (a))
+this returns the first item in a list:
+'(e (q (f (a))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
-e.g.  
-'(e (f (a)) (a))' '((q 123) (q 456) (q 789))'  
-returns  
+e.g.
+'(e (q (f (a))) (a))' '(123 456 789)'
+returns
 123
 
 
 \- \- \- \- \- \- \-
 
 
-this returns the second item in the list:  
-(e (f (r (a))) (a))
+this returns the second item in a list:
+'(e (q (f (r (a)))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
-e.g.  
-'(e (f (r (a))) (a))' '((q 123) (q 456) (q 789))'  
-returns  
+e.g.
+'(e (q (f (r (a)))) (a))' '(123 456 789)'
+returns
 456
 
 
 \- \- \- \- \- \- \-
 
 
-this returns the third item in a list:  
-(e (f (r (r (a)))) (a))
+this returns the third item in a list:
+'(e (q (f (r (r (a))))) (a))' '(ITEM1 ITEM2 ... ITEMN)'
 
-e.g.  
-'(e (f (r (r (a)))) (a))' '((q 123) (q 456) (q 789))'  
-returns  
+e.g.
+'(e (q (f (r (r (a))))) (a))' '(123 456 789)'
+returns
 789
 
 
