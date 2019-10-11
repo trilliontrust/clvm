@@ -5,7 +5,7 @@ from . import core_ops, more_ops
 from .casts import (
     int_from_bytes, int_to_bytes, bls12_381_from_bytes, bls12_381_to_bytes, bls12_381_generator
 )
-from .make_eval import make_eval_f
+from .make_eval_rs import make_eval_f
 from .op_utils import operators_for_module
 from .serialize import sexp_to_stream
 from .subclass_sexp import subclass_sexp
