@@ -25,7 +25,7 @@ def make_eval_f(operator_lookup, quote_kw, eval_kw, env_kw):
     def eval_core(eval_f, form, env):
         form_blob = sexp_to_blob(env.first())
         env_blob = sexp_to_blob(env.rest())
-        error, r_blob = do_eval(form_blob, env_blob)
+        error, r_blob, cycles = do_eval(form_blob, env_blob)
         r = sexp_from_blob(bytes(r_blob))
         if error:
             raise EvalError(error, r)
