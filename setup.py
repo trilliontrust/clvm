@@ -1,6 +1,21 @@
 #!/usr/bin/env python
 
+import sys
+
 from setuptools import setup
+
+try:
+    from setuptools_rust import RustExtension
+except ImportError:
+    import subprocess
+
+    errno = subprocess.call([sys.executable, "-m", "pip", "install", "setuptools-rust"])
+    if errno:
+        print("Please install setuptools-rust package")
+        raise SystemExit(errno)
+    else:
+        from setuptools_rust import RustExtension
+
 
 setup(
     name="clvm",
@@ -11,7 +26,7 @@ setup(
     license="https://opensource.org/licenses/Apache-2.0",
     description="[Contract Language | Chialisp] Virtual Machine",
     install_requires=["setuptools_scm"],
-    setup_requires=["setuptools_scm"],
+    setup_requires=["setuptools_scm", "setuptools-rust>=0.10.1", "wheel"],
     use_scm_version={"fallback_version": "unknown"},
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -21,6 +36,7 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Topic :: Security :: Cryptography",
     ],
+    rust_extensions=[RustExtension("clvm.native.clvmr")],
     project_urls={
         "Bug Reports": "https://github.com/Chia-Network/clvm",
         "Source": "https://github.com/Chia-Network/clvm",

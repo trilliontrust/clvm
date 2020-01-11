@@ -2,7 +2,7 @@
 
 import io
 
-from csr import do_eval
+from clvm.native.clvmr import do_eval
 
 from .serialize import sexp_from_stream, sexp_to_stream
 from .EvalError import EvalError
@@ -22,10 +22,13 @@ def sexp_from_blob(blob):
 
 def make_eval_f(operator_lookup, quote_kw, eval_kw, env_kw):
 
+    def internal_operator(form, env):
+        breakpoint()
+
     def eval_core(eval_f, form, env):
         form_blob = sexp_to_blob(env.first())
         env_blob = sexp_to_blob(env.rest())
-        error, r_blob, cycles = do_eval(form_blob, env_blob)
+        error, r_blob, cycles = do_eval(form_blob, env_blob, internal_operator)
         r = sexp_from_blob(bytes(r_blob))
         if error:
             raise EvalError(error, r)
