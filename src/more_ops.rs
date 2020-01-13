@@ -92,3 +92,20 @@ pub fn op_multiply(args: &Node) -> Result<Reduction, EvalErr> {
     let total: Node = total.into();
     Ok(total.into())
 }
+
+pub fn op_gr(args: &Node) -> Result<Reduction, EvalErr> {
+    let a0 = args.first()?;
+    let v0: Option<Number> = Option::from(&a0);
+    let a1 = args.rest()?.first()?;
+    let v1: Option<Number> = Option::from(&a1);
+    if let Some(n0) = v0 {
+        if let Some(n1) = v1 {
+            return Ok(if n0 > n1 {
+                Node::blob_u8(&[1]).into()
+            } else {
+                Node::null().into()
+            });
+        }
+    }
+    args.err("> on list")
+}
