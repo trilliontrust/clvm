@@ -61,19 +61,13 @@ fn eval_params(
 fn apply(
     operator: &Node,
     params: &Node,
-    current_cost: u32,
     f_table: &FLookup,
     apply2: &mut FApply2,
 ) -> Result<Reduction, EvalErr> {
     let op_8: Option<u8> = operator.clone().into();
     if let Some(op_8) = op_8 {
         if let Some(f) = f_table[op_8 as usize] {
-            return {
-                match f(&params) {
-                    Ok(Reduction(node, cost)) => Ok(Reduction(node, cost + current_cost)),
-                    Err(e) => Err(e),
-                }
-            };
+            return f(&params);
         }
     };
     apply2(operator, params)
@@ -118,7 +112,8 @@ pub fn eval(
                         let Reduction(params, new_cost) =
                             eval_params(&right, env, current_cost, max_cost, f_table, apply2)?;
 
-                        apply(&left, &params, new_cost, f_table, apply2)
+                        let Reduction(r, apply_cost) = apply(&left, &params, f_table, apply2)?;
+                        Ok(Reduction(r, apply_cost + new_cost))
                     }
                 }
             }
