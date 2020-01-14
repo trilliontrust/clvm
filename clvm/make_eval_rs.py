@@ -16,14 +16,18 @@ def sexp_to_blob(sexp):
 
 def sexp_from_blob(blob):
     from .runtime_001 import to_sexp_f
-    f = io.BytesIO(blob)
+    f = io.BytesIO(bytes(blob))
     return sexp_from_stream(f, to_sexp_f)
 
 
 def make_eval_f(operator_lookup, quote_kw, eval_kw, env_kw):
 
-    def internal_operator(form, env):
-        breakpoint()
+    def internal_operator(operator_blob, args_blob):
+        operator = sexp_from_blob(operator_blob)
+        args = sexp_from_blob(args_blob)
+        f = operator_lookup.get(operator.as_atom())
+        r = f(args)
+        return sexp_to_blob(r)
 
     def eval_core(eval_f, form, env):
         form_blob = sexp_to_blob(env.first())
