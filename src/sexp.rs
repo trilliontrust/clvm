@@ -130,3 +130,17 @@ impl From<u8> for Node {
         Node(Rc::new(SExp::Atom(v.into())))
     }
 }
+
+impl From<Node> for Option<u8> {
+    fn from(item: Node) -> Option<u8> {
+        let blob = item.as_blob()?;
+        let len = blob.len();
+        if len == 0 {
+            Some(0)
+        } else if len == 1 {
+            Some(blob[0])
+        } else {
+            None
+        }
+    }
+}

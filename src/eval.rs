@@ -47,18 +47,6 @@ impl Node {
 const OP_QUOTE: u8 = 1;
 const OP_ARGS: u8 = 3;
 
-fn as_operator(item: &Node) -> Option<u8> {
-    let blob = item.as_blob()?;
-    let len = blob.len();
-    if len == 0 {
-        Some(0)
-    } else if len == 1 {
-        Some(blob[0])
-    } else {
-        None
-    }
-}
-
 fn eval_params(
     params: &Node,
     env: &Node,
@@ -127,7 +115,8 @@ pub fn eval(
                     ),
                 }
             } else {
-                match as_operator(&left) {
+                let as_operator: Option<u8> = left.clone().into();
+                match as_operator {
                     Some(OP_QUOTE) => {
                         let rest = form.rest()?;
                         if rest.nullp() || !rest.rest()?.nullp() {
