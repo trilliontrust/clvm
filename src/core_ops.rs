@@ -4,14 +4,14 @@ use super::sexp::Node;
 impl Node {
     pub fn first(&self) -> Result<Node, EvalErr> {
         match self.as_pair() {
-            Some((a, _b)) => Ok(a.into()),
+            Some((a, _b)) => Ok(a),
             _ => self.node_err("first of non-cons"),
         }
     }
 
     pub fn rest(&self) -> Result<Node, EvalErr> {
         match self.as_pair() {
-            Some((_a, b)) => Ok(b.into()),
+            Some((_a, b)) => Ok(b),
             _ => self.node_err("rest of non-cons"),
         }
     }

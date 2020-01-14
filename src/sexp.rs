@@ -62,9 +62,17 @@ impl Node {
         }
     }
 
+    pub fn is_pair(&self) -> bool {
+        let sexp: &SExp = &self.0;
+        match sexp {
+            SExp::Pair(_a, _b) => true,
+            _ => false,
+        }
+    }
+
     pub fn nullp(&self) -> bool {
         match self.as_blob() {
-            Some(blob) => blob.len() == 0,
+            Some(blob) => blob.is_empty(),
             None => false,
         }
     }
@@ -90,7 +98,7 @@ impl Display for Node {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         if let Some(blob) = self.as_blob() {
             let t: &[u8] = &*blob;
-            if t.len() == 0 {
+            if t.is_empty() {
                 write!(f, "()")?;
             } else {
                 write!(f, "0x")?;

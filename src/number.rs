@@ -9,7 +9,7 @@ impl From<Number> for Node {
         let mut bytes: Vec<u8> = vec![0; 32];
         item.to_big_endian(&mut bytes);
         let mut slice = bytes.as_slice();
-        while (slice.len() > 0) && (slice[0] == 0) {
+        while (!slice.is_empty()) && (slice[0] == 0) {
             if slice.len() > 1 && (slice[1] & 0x80 == 0x80) {
                 break;
             }

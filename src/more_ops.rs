@@ -8,7 +8,7 @@ use std::io::{Seek, SeekFrom, Write};
 
 pub fn op_wrap(args: &Node) -> Result<Reduction, EvalErr> {
     let mut buffer = Cursor::new(Vec::new());
-    if let Ok(_) = node_to_stream(&args.first()?, &mut buffer) {
+    if node_to_stream(&args.first()?, &mut buffer).is_ok() {
         let vec = buffer.into_inner();
         return Ok(Node::blob_u8(&vec).into());
     }
@@ -18,11 +18,9 @@ pub fn op_wrap(args: &Node) -> Result<Reduction, EvalErr> {
 pub fn op_unwrap(args: &Node) -> Result<Reduction, EvalErr> {
     let mut buffer = Cursor::new(Vec::new());
     if let Some(b) = args.first()?.as_blob() {
-        if let Ok(_) = buffer.write_all(&b) {
-            if let Ok(_) = buffer.seek(SeekFrom::Start(0)) {
-                if let Ok(node) = node_from_stream(&mut buffer) {
-                    return Ok(node.into());
-                }
+        if buffer.write_all(&b).is_ok() && buffer.seek(SeekFrom::Start(0)).is_ok() {
+            if let Ok(node) = node_from_stream(&mut buffer) {
+                return Ok(node.into());
             }
         }
     }

@@ -11,20 +11,20 @@ fn encode_size(f: &mut dyn Write, size: usize) -> std::io::Result<()> {
         f.write_all(&[(0x80 | size) as u8])?;
     } else if size < 0x2000 {
         f.write_all(&[(0xc0 | (size >> 8)) as u8, ((size >> 0) & 0xff) as u8])?;
-    } else if size < 0x100000 {
+    } else if size < 0x10_0000 {
         f.write_all(&[
             (0xe0 | (size >> 16)) as u8,
             ((size >> 8) & 0xff) as u8,
             ((size >> 0) & 0xff) as u8,
         ])?;
-    } else if size < 0x8000000 {
+    } else if size < 0x800_0000 {
         f.write_all(&[
             (0xf0 | (size >> 24)) as u8,
             ((size >> 16) & 0xff) as u8,
             ((size >> 8) & 0xff) as u8,
             ((size >> 0) & 0xff) as u8,
         ])?;
-    } else if size < 0x400000000 {
+    } else if size < 0x4_0000_0000 {
         f.write_all(&[
             (0xf8 | (size >> 32)) as u8,
             ((size >> 24) & 0xff) as u8,
@@ -99,5 +99,5 @@ pub fn node_from_stream(f: &mut dyn Read) -> std::io::Result<Node> {
     let blob_size = decode_size(f, b[0])?;
     let mut blob: Vec<u8> = vec![0; blob_size];
     f.read_exact(&mut blob)?;
-    return Ok(Node::blob_u8(&blob));
+    Ok(Node::blob_u8(&blob))
 }

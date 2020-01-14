@@ -38,21 +38,20 @@ fn do_eval(
     env_u8: &PyBytes,
     apply2: PyObject,
 ) -> PyResult<(String, Vec<u8>, u32)> {
-    let py1: Python = py.clone();
     let sexp = node_from_bytes(form_u8.as_bytes())?;
     let env = node_from_bytes(env_u8.as_bytes())?;
     let f_table = make_f_lookup();
     let mut py_apply2: FApply2 = Box::new(move |sexp, args| -> Result<Reduction, EvalErr> {
         let byte_vec: Vec<u8> = apply2
-            .call1(py1, (node_to_bytes(&sexp)?, node_to_bytes(&args)?))?
-            .extract(py1)?;
+            .call1(py, (node_to_bytes(&sexp)?, node_to_bytes(&args)?))?
+            .extract(py)?;
         let bytes: &[u8] = &byte_vec;
         Ok(Reduction(node_from_bytes(bytes)?, 1000))
     });
-    let r = eval(&sexp, &env, 0, 100000, &f_table, &mut py_apply2);
+    let r = eval(&sexp, &env, 0, 100_000, &f_table, &mut py_apply2);
     match r {
         Ok(Reduction(node, cycles)) => Ok(("".into(), node_to_bytes(&node)?, cycles)),
-        Err(EvalErr(node, err)) => Ok((err.into(), node_to_bytes(&node)?, 0)),
+        Err(EvalErr(node, err)) => Ok((err, node_to_bytes(&node)?, 0)),
     }
 }
 

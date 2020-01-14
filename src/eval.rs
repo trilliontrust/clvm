@@ -9,17 +9,6 @@ pub type FApply = fn(&Node) -> Result<Reduction, EvalErr>;
 
 pub type FApply2 = Box<dyn FnMut(&Node, &Node) -> Result<Reduction, EvalErr>>;
 
-pub type FEval = fn(
-    form: &Node,
-    env: &Node,
-    current_cost: u32,
-    max_cost: u32,
-    f_table: &FLookup,
-    apply2: &mut FApply2,
-) -> Result<Reduction, EvalErr>;
-
-pub struct FEval1(fn(feval: &FEval1, form: &Node) -> ());
-
 pub type FLookup = [Option<FApply>; 256];
 
 impl From<std::io::Error> for EvalErr {
@@ -73,7 +62,6 @@ fn apply(
     operator: &Node,
     params: &Node,
     current_cost: u32,
-    max_cost: u32,
     f_table: &FLookup,
     apply2: &mut FApply2,
 ) -> Result<Reduction, EvalErr> {
@@ -102,7 +90,7 @@ pub fn eval(
     match form.as_pair() {
         None => form.err("not a list"),
         Some((left, right)) => {
-            if let Some(_) = left.as_pair() {
+            if left.is_pair() {
                 let r = eval(&left, &env, current_cost, max_cost, f_table, apply2)?;
                 match r {
                     Reduction(result, new_cost) => eval(
@@ -122,7 +110,7 @@ pub fn eval(
                         if rest.nullp() || !rest.rest()?.nullp() {
                             form.err("quote requires exactly 1 parameter")
                         } else {
-                            Ok(Reduction(right.first()?.clone(), current_cost + 1))
+                            Ok(Reduction(right.first()?, current_cost + 1))
                         }
                     }
                     Some(OP_ARGS) => Ok(Reduction(env.clone(), current_cost + 1)),
@@ -130,7 +118,7 @@ pub fn eval(
                         let Reduction(params, new_cost) =
                             eval_params(&right, env, current_cost, max_cost, f_table, apply2)?;
 
-                        apply(&left, &params, current_cost, max_cost, f_table, apply2)
+                        apply(&left, &params, new_cost, f_table, apply2)
                     }
                 }
             }
