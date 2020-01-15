@@ -5,7 +5,7 @@ import os
 from .EvalError import EvalError
 
 
-def make_eval_f(operator_lookup, quote_kw, eval_kw, env_kw):
+def make_eval_f(operator_lookup, quote_kw, env_kw):
 
     CLVM_DISALLOW_E_OP = os.environ.get('CLVM_DISALLOW_E_OP')
 
@@ -35,18 +35,6 @@ def make_eval_f(operator_lookup, quote_kw, eval_kw, env_kw):
 
         # TODO: rewrite with cons, rest, etc.
         args = form.to([eval_f(eval_f, _, env) for _ in form.rest().as_iter()])
-
-        # keyword EVAL
-
-        if f_index == eval_kw:
-            if CLVM_DISALLOW_E_OP:
-                if CLVM_DISALLOW_E_OP == "breakpoint":
-                    print(form)
-                    breakpoint()
-                raise EvalError("e operator no longer supported", form)
-            if args.rest().nullp() or not args.rest().rest().nullp():
-                raise EvalError("eval requires 2 parameters", form)
-            return eval_f(eval_f, args.first(), args.rest().first())
 
         # keyword ENV
 
