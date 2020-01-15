@@ -37,6 +37,8 @@ fn do_eval(
     form_u8: &PyBytes,
     env_u8: &PyBytes,
     apply2: PyObject,
+    op_quote: u8,
+    op_args: u8,
 ) -> PyResult<(String, Vec<u8>, u32)> {
     let sexp = node_from_bytes(form_u8.as_bytes())?;
     let env = node_from_bytes(env_u8.as_bytes())?;
@@ -48,7 +50,16 @@ fn do_eval(
         let bytes: &[u8] = &byte_vec;
         Ok(Reduction(node_from_bytes(bytes)?, 1000))
     });
-    let r = eval(&sexp, &env, 0, 100_000, &f_table, &mut py_apply2);
+    let r = eval(
+        &sexp,
+        &env,
+        0,
+        100_000,
+        &f_table,
+        &mut py_apply2,
+        op_quote,
+        op_args,
+    );
     match r {
         Ok(Reduction(node, cycles)) => Ok(("".into(), node_to_bytes(&node)?, cycles)),
         Err(EvalErr(node, err)) => Ok((err, node_to_bytes(&node)?, 0)),

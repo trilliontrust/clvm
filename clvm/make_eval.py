@@ -5,7 +5,7 @@ import os
 from .EvalError import EvalError
 
 
-def make_eval_f(operator_lookup, quote_kw, env_kw):
+def make_eval_f(operator_lookup, quote_kw, args_kw):
 
     CLVM_DISALLOW_E_OP = os.environ.get('CLVM_DISALLOW_E_OP')
 
@@ -38,7 +38,7 @@ def make_eval_f(operator_lookup, quote_kw, env_kw):
 
         # keyword ENV
 
-        if f_index == env_kw:
+        if f_index == args_kw:
             if form.nullp() or not form.rest().nullp():
                 raise EvalError("env requires no parameters", form)
             return env
