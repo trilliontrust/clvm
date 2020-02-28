@@ -38,10 +38,25 @@ pub fn op_sha256(args: &Node) -> Result<Reduction, EvalErr> {
     Ok(Node::blob_u8(&hasher.result()).into())
 }
 
-pub fn op_sha256_tree(args: &Node) -> Result<Reduction, EvalErr> {
+pub fn sha256_tree(args: &Node) -> Box<[u8]> {
     let mut hasher = Sha256::new();
-    node_to_stream(&args.first()?, &mut hasher)?;
-    Ok(Node::blob_u8(&hasher.result()).into())
+    if args.is_pair() {
+        hasher.input([2]);
+        hasher.input(sha256_tree(&args.first().unwrap()));
+        hasher.input(sha256_tree(&args.rest().unwrap()));
+    } else {
+        hasher.input([1]);
+        hasher.input(args.as_blob().unwrap());
+    }
+
+    let result = hasher.result();
+    let v: Vec<u8> = result.into_iter().collect();
+    v.into_boxed_slice()
+}
+
+pub fn op_sha256_tree(args: &Node) -> Result<Reduction, EvalErr> {
+    let n: Node = args.first()?;
+    Ok(Node::blob_u8(&sha256_tree(&n)).into())
 }
 
 pub fn op_add(args: &Node) -> Result<Reduction, EvalErr> {
