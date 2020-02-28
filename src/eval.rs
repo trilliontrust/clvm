@@ -1,3 +1,4 @@
+use super::number::Number;
 use super::sexp::Node;
 
 pub struct EvalContext {
@@ -69,6 +70,34 @@ pub fn default_eval_atom(
     _op_args: u8,
 ) -> Result<Reduction, EvalErr> {
     form.err("not a list")
+}
+
+pub fn eval_atom_as_tree(
+    _eval_context: &EvalContext,
+    form: &Node,
+    env: &Node,
+    current_cost: u32,
+    _max_cost: u32,
+    _op_quote: u8,
+    _op_args: u8,
+) -> Result<Reduction, EvalErr> {
+    let node_index: Option<Number> = form.into();
+    let mut node_index: Number = node_index.unwrap();
+    let mut cost = current_cost;
+    let mut env: Node = env.clone();
+    while node_index > (1).into() {
+        let new_env = {
+            if (node_index & (1).into()) == (1).into() {
+                env.rest()?
+            } else {
+                env.first()?
+            }
+        };
+        env = new_env;
+        node_index >>= 1;
+        cost += 1;
+    }
+    Ok(Reduction(env, cost))
 }
 
 pub fn default_eval(
@@ -186,10 +215,10 @@ pub fn default_apply_fallback(
 pub fn make_default_eval_context(f_lookup: FLookup, apply_fallback: FApplyFallback) -> EvalContext {
     EvalContext {
         eval_f: default_eval,
-        eval_atom: default_eval_atom,
+        eval_atom: eval_atom_as_tree,
         apply_f: default_apply0,
         f_table: f_lookup,
-        apply_fallback: apply_fallback,
+        apply_fallback,
     }
 }
 
