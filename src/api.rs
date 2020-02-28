@@ -1,5 +1,5 @@
 use super::eval::Reduction;
-use super::eval::{run_program, EvalErr, FApply3};
+use super::eval::{run_program, EvalErr, FApplyFallback};
 use super::f_table::make_f_lookup;
 use super::serialize::{node_from_stream, node_to_stream};
 use super::sexp::Node;
@@ -43,7 +43,7 @@ fn do_eval(
     let sexp = node_from_bytes(form_u8.as_bytes())?;
     let env = node_from_bytes(env_u8.as_bytes())?;
     let f_table = make_f_lookup();
-    let py_apply3: FApply3 = Box::new(
+    let py_apply: FApplyFallback = Box::new(
         move |_eval_context, sexp, args| -> Result<Reduction, EvalErr> {
             let byte_vec: Vec<u8> = apply3
                 .call1(py, (node_to_bytes(&sexp)?, node_to_bytes(&args)?))?
@@ -53,7 +53,7 @@ fn do_eval(
         },
     );
     let r = run_program(
-        &sexp, &env, 0, 100_000, &f_table, py_apply3, op_quote, op_args,
+        &sexp, &env, 0, 100_000, &f_table, py_apply, op_quote, op_args,
     );
     match r {
         Ok(Reduction(node, cycles)) => Ok(("".into(), node_to_bytes(&node)?, cycles)),

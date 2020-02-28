@@ -1,13 +1,20 @@
 use super::sexp::Node;
 
+pub struct EvalContext {
+    pub eval_f: FEval,
+    pub f_table: FLookup,
+    pub apply_f: FApply,
+    pub apply_fallback: FApplyFallback,
+}
+
 #[derive(Debug, Clone)]
 pub struct EvalErr(pub Node, pub String);
 
 pub struct Reduction(pub Node, pub u32);
 
-pub type FApply = fn(&Node) -> Result<Reduction, EvalErr>;
+pub type OperatorF = fn(&Node) -> Result<Reduction, EvalErr>;
 
-pub type FLookup = [Option<FApply>; 256];
+pub type FLookup = [Option<OperatorF>; 256];
 
 impl From<std::io::Error> for EvalErr {
     fn from(err: std::io::Error) -> Self {
@@ -31,20 +38,13 @@ impl Node {
     }
 }
 
-pub type FEval = fn(&Eval, &Node, &Node, u32, u32, u8, u8) -> Result<Reduction, EvalErr>;
+pub type FEval = fn(&EvalContext, &Node, &Node, u32, u32, u8, u8) -> Result<Reduction, EvalErr>;
 
-pub struct Eval {
-    pub eval_f: FEval,
-    pub apply_f: FApply0,
-    pub f_table: FLookup,
-    pub apply3: FApply3,
-}
-
-pub type FApply0 = fn(&Eval, &Node, &Node) -> Result<Reduction, EvalErr>;
-pub type FApply3 = Box<dyn Fn(&Eval, &Node, &Node) -> Result<Reduction, EvalErr>>;
+pub type FApply = fn(&EvalContext, &Node, &Node) -> Result<Reduction, EvalErr>;
+pub type FApplyFallback = Box<dyn Fn(&EvalContext, &Node, &Node) -> Result<Reduction, EvalErr>>;
 
 pub fn default_apply0(
-    eval_context: &Eval,
+    eval_context: &EvalContext,
     operator: &Node,
     params: &Node,
 ) -> Result<Reduction, EvalErr> {
@@ -54,11 +54,12 @@ pub fn default_apply0(
             return f(&params);
         }
     };
-    (eval_context.apply3)(eval_context, operator, params)
+
+    (eval_context.apply_fallback)(eval_context, operator, params)
 }
 
 pub fn default_eval(
-    eval_context: &Eval,
+    eval_context: &EvalContext,
     form: &Node,
     env: &Node,
     current_cost: u32,
@@ -106,9 +107,9 @@ pub fn default_eval(
                         return { Ok(Reduction(env.clone(), current_cost + 1)) };
                     }
                 }
-                let Reduction(params, new_cost) = eval_params2(
+                let Reduction(params, new_cost) = eval_params(
                     &eval_context,
-                    &form,
+                    &form.rest()?,
                     &env,
                     current_cost,
                     max_cost,
@@ -123,8 +124,8 @@ pub fn default_eval(
     }
 }
 
-fn eval_params2(
-    eval_context: &Eval,
+fn eval_params(
+    eval_context: &EvalContext,
     params: &Node,
     env: &Node,
     current_cost: u32,
@@ -132,10 +133,9 @@ fn eval_params2(
     op_quote: u8,
     op_args: u8,
 ) -> Result<Reduction, EvalErr> {
-    let iter = params.rest()?;
     let mut new_cost = current_cost;
     let mut vec: Vec<Node> = Vec::new();
-    for item in iter {
+    for item in params.clone() {
         let r = (eval_context.eval_f)(
             &eval_context,
             &item,
@@ -154,20 +154,20 @@ fn eval_params2(
     Ok(Reduction(Node::from_list(vec), new_cost))
 }
 
-pub fn default_apply3(
-    _eval_context: &Eval,
+pub fn default_apply_fallback(
+    _eval_context: &EvalContext,
     operator: &Node,
     _args: &Node,
 ) -> Result<Reduction, EvalErr> {
     operator.err("unknown operator")
 }
 
-pub fn make_default_eval_context(f_lookup: FLookup, apply3: FApply3) -> Eval {
-    Eval {
+pub fn make_default_eval_context(f_lookup: FLookup, apply_fallback: FApplyFallback) -> EvalContext {
+    EvalContext {
         eval_f: default_eval,
         apply_f: default_apply0,
         f_table: f_lookup,
-        apply3: Box::new(apply3),
+        apply_fallback: apply_fallback,
     }
 }
 
@@ -177,11 +177,11 @@ pub fn run_program(
     current_cost: u32,
     max_cost: u32,
     f_table: &FLookup,
-    apply3: FApply3,
+    apply_fallback: FApplyFallback,
     op_quote: u8,
     op_args: u8,
 ) -> Result<Reduction, EvalErr> {
-    let eval_context: Eval = make_default_eval_context(*f_table, apply3);
+    let eval_context: EvalContext = make_default_eval_context(*f_table, apply_fallback);
     (eval_context.eval_f)(
         &eval_context,
         &form,

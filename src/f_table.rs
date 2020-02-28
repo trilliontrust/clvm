@@ -1,10 +1,10 @@
 use super::core_ops::{op_cons, op_eq, op_first, op_if, op_listp, op_raise, op_rest};
-use super::eval::{FApply, FLookup};
+use super::eval::{FLookup, OperatorF};
 use super::more_ops::{
     op_add, op_gr, op_multiply, op_sha256, op_sha256_tree, op_subtract, op_unwrap, op_wrap,
 };
 
-static OPCODE_LOOKUP: [(u8, FApply); 15] = [
+static OPCODE_LOOKUP: [(u8, OperatorF); 15] = [
     (4, op_if),
     (5, op_cons),
     (6, op_first),
