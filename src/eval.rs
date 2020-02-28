@@ -2,6 +2,7 @@ use super::sexp::Node;
 
 pub struct EvalContext {
     pub eval_f: FEval,
+    pub eval_atom: FEval,
     pub f_table: FLookup,
     pub apply_f: FApply,
     pub apply_fallback: FApplyFallback,
@@ -58,6 +59,18 @@ pub fn default_apply0(
     (eval_context.apply_fallback)(eval_context, operator, params)
 }
 
+pub fn default_eval_atom(
+    _eval_context: &EvalContext,
+    form: &Node,
+    _env: &Node,
+    _current_cost: u32,
+    _max_cost: u32,
+    _op_quote: u8,
+    _op_args: u8,
+) -> Result<Reduction, EvalErr> {
+    form.err("not a list")
+}
+
 pub fn default_eval(
     eval_context: &EvalContext,
     form: &Node,
@@ -68,7 +81,15 @@ pub fn default_eval(
     op_args: u8,
 ) -> Result<Reduction, EvalErr> {
     match form.as_pair() {
-        None => form.err("not a list"),
+        None => (eval_context.eval_atom)(
+            eval_context,
+            form,
+            env,
+            current_cost,
+            max_cost,
+            op_quote,
+            op_args,
+        ),
         Some((left, right)) => {
             if left.is_pair() {
                 let r = (eval_context.eval_f)(
@@ -165,6 +186,7 @@ pub fn default_apply_fallback(
 pub fn make_default_eval_context(f_lookup: FLookup, apply_fallback: FApplyFallback) -> EvalContext {
     EvalContext {
         eval_f: default_eval,
+        eval_atom: default_eval_atom,
         apply_f: default_apply0,
         f_table: f_lookup,
         apply_fallback: apply_fallback,
