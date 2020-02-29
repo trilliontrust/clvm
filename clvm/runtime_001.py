@@ -101,6 +101,8 @@ def run_program(
                 finally:
                     if post_eval_f:
                         post_eval_f(context, r)
+                    if callable(context):
+                        context(r)
                 return r
 
         eval_class = WrappedEval
