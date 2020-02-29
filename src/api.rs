@@ -1,5 +1,5 @@
 use super::eval::Reduction;
-use super::eval::{run_program, EvalErr, FApplyFallback};
+use super::eval::{run_program, EvalErr, FApplyFallback, PreEval};
 use super::f_table::make_f_lookup;
 use super::serialize::{node_from_stream, node_to_stream};
 use super::sexp::Node;
@@ -37,6 +37,7 @@ fn do_eval(
     form_u8: &PyBytes,
     env_u8: &PyBytes,
     apply3: PyObject,
+    pre_eval: PyObject,
     op_quote: u8,
     op_args: u8,
 ) -> PyResult<(String, Vec<u8>, u32)> {
@@ -52,8 +53,9 @@ fn do_eval(
             Ok(Reduction(node_from_bytes(bytes)?, 1000))
         },
     );
+    let pre_eval: PreEval = None;
     let r = run_program(
-        &sexp, &env, 0, 100_000, &f_table, py_apply, op_quote, op_args,
+        &sexp, &env, 0, 100_000, &f_table, py_apply, pre_eval, op_quote, op_args,
     );
     match r {
         Ok(Reduction(node, cycles)) => Ok(("".into(), node_to_bytes(&node)?, cycles)),

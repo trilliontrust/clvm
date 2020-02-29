@@ -29,10 +29,11 @@ def make_run_program(operator_lookup, quote_kw, args_kw):
         r = f(args)
         return sexp_to_blob(r)
 
-    def run_program(form, env):
+    def run_program(form, env, pre_eval_f=None, max_cost=0):
         form_blob = sexp_to_blob(env.first())
         env_blob = sexp_to_blob(env.rest())
-        error, r_blob, cycles = do_eval(form_blob, env_blob, internal_operator, quote_kw[0], args_kw[0])
+        error, r_blob, cycles = do_eval(
+            form_blob, env_blob, internal_operator, pre_eval_f, quote_kw[0], args_kw[0])
         r = sexp_from_blob(bytes(r_blob))
         if error:
             raise EvalError(error, r)

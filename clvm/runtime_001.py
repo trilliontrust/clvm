@@ -87,5 +87,5 @@ def run_program(
 
     run_program = make_run_program(operator_lookup, quote_kw, args_kw)
 
-    r, cycles = run_program(program, args)
+    r, cycles = run_program(program, args, pre_eval_f=pre_eval_f, max_cost=max_cost)
     return cycles, args.to(r)

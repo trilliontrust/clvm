@@ -45,6 +45,9 @@ pub type FEval = fn(&EvalContext, &Node, &Node, u32, u32, u8, u8) -> Result<Redu
 pub type FApply = fn(&EvalContext, &Node, &Node) -> Result<Reduction, EvalErr>;
 pub type FApplyFallback = Box<dyn Fn(&EvalContext, &Node, &Node) -> Result<Reduction, EvalErr>>;
 
+pub type PreEval = Option<Box<dyn Fn(&Node, &Node, u32, u32) -> PostEval>>;
+pub type PostEval = Option<Box<dyn Fn(&Node) -> ()>>;
+
 pub fn default_apply0(
     eval_context: &EvalContext,
     operator: &Node,
@@ -212,9 +215,29 @@ pub fn default_apply_fallback(
     operator.err("unknown operator")
 }
 
-pub fn make_default_eval_context(f_lookup: FLookup, apply_fallback: FApplyFallback) -> EvalContext {
+pub fn make_default_eval_context(
+    f_lookup: FLookup,
+    apply_fallback: FApplyFallback,
+    pre_eval: PreEval,
+) -> EvalContext {
+    let eval_f = {
+        match pre_eval {
+            Some(f) => default_eval,
+            None => default_eval,
+        }
+    };
+
+    /*
+    // for use with the wrapper function
+
+    let post_eval_f: PostEval = match &eval_context.pre_eval {
+        Some(f) => f(form, env, current_cost, max_cost),
+        None => None,
+    };
+    */
+
     EvalContext {
-        eval_f: default_eval,
+        eval_f,
         eval_atom: eval_atom_as_tree,
         apply_f: default_apply0,
         f_table: f_lookup,
@@ -229,10 +252,11 @@ pub fn run_program(
     max_cost: u32,
     f_table: &FLookup,
     apply_fallback: FApplyFallback,
+    pre_eval: PreEval,
     op_quote: u8,
     op_args: u8,
 ) -> Result<Reduction, EvalErr> {
-    let eval_context: EvalContext = make_default_eval_context(*f_table, apply_fallback);
+    let eval_context: EvalContext = make_default_eval_context(*f_table, apply_fallback, pre_eval);
     (eval_context.eval_f)(
         &eval_context,
         &form,
