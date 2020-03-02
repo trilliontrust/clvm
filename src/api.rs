@@ -1,5 +1,5 @@
 use super::eval::Reduction;
-use super::eval::{run_program, EvalErr, FApplyFallback, PostEval, PreEval};
+use super::eval::{run_program, EvalErr, FApplyFallback, PreEval};
 use super::f_table::make_f_lookup;
 use super::serialize::{node_from_stream, node_to_stream};
 use super::sexp::Node;
@@ -31,24 +31,13 @@ fn node_to_bytes(node: &Node) -> std::io::Result<Vec<u8>> {
     Ok(vec)
 }
 
-fn wrap_py_post_eval(py: Python<'static>, py_post_eval: PyObject) -> PostEval {
-    if py_post_eval.is_none() {
-        None
-    } else {
-        Some(Box::new(move |sexp| -> () {
-            let r = py_post_eval
-                .call1(py, (node_to_bytes(&sexp).unwrap(),));
-        }))
-    }
-}
-
 #[pyfunction]
 fn do_eval(
     py: Python<'static>,
     form_u8: &PyBytes,
     env_u8: &PyBytes,
     apply3: PyObject,
-    py_pre_eval: PyObject,
+    pre_eval: PyObject,
     op_quote: u8,
     op_args: u8,
 ) -> PyResult<(String, Vec<u8>, u32)> {
@@ -64,29 +53,7 @@ fn do_eval(
             Ok(Reduction(node_from_bytes(bytes)?, 1000))
         },
     );
-
-    let pre_eval: PreEval = {
-        if py_pre_eval.is_none() {
-            None
-        } else {
-            Some(Box::new(
-                move |sexp, args, current_cost, max_cost| -> Result<PostEval, EvalErr> {
-                    let py_post_eval: PyObject = py_pre_eval
-                        .call1(
-                            py,
-                            (
-                                node_to_bytes(&sexp)?,
-                                node_to_bytes(&args)?,
-                                current_cost,
-                                max_cost,
-                            ),
-                        )?
-                        .extract(py)?;
-                    Ok(wrap_py_post_eval(py, py_post_eval))
-                },
-            ))
-        }
-    };
+    let pre_eval: PreEval = None;
     let r = run_program(
         &sexp, &env, 0, 100_000, &f_table, py_apply, pre_eval, op_quote, op_args,
     );

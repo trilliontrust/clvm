@@ -40,13 +40,12 @@ impl Node {
     }
 }
 
-pub type FEval =
-    Box<dyn Fn(&EvalContext, &Node, &Node, u32, u32, u8, u8) -> Result<Reduction, EvalErr>>;
+pub type FEval = fn(&EvalContext, &Node, &Node, u32, u32, u8, u8) -> Result<Reduction, EvalErr>;
 
 pub type FApply = fn(&EvalContext, &Node, &Node) -> Result<Reduction, EvalErr>;
 pub type FApplyFallback = Box<dyn Fn(&EvalContext, &Node, &Node) -> Result<Reduction, EvalErr>>;
 
-pub type PreEval = Option<Box<dyn Fn(&Node, &Node, u32, u32) -> Result<PostEval, EvalErr>>>;
+pub type PreEval = Option<Box<dyn Fn(&Node, &Node, u32, u32) -> PostEval>>;
 pub type PostEval = Option<Box<dyn Fn(&Node) -> ()>>;
 
 pub fn default_apply0(
@@ -221,49 +220,16 @@ pub fn make_default_eval_context(
     apply_fallback: FApplyFallback,
     pre_eval: PreEval,
 ) -> EvalContext {
-    let eval_f: FEval = {
+    let eval_f = {
         match pre_eval {
-            Some(pre_eval_f) => {
-                let wrapped_eval: FEval = {
-                    Box::new(
-                        move |eval_context,
-                              form,
-                              env,
-                              current_cost,
-                              max_cost,
-                              op_quote,
-                              op_args|
-                              -> Result<Reduction, EvalErr> {
-                            let post_eval_f: PostEval =
-                                pre_eval_f(form, env, current_cost, max_cost)?;
-                            let r: Reduction = default_eval(
-                                eval_context,
-                                form,
-                                env,
-                                current_cost,
-                                max_cost,
-                                op_quote,
-                                op_args,
-                            )?;
-                            match post_eval_f {
-                                Some(f) => {
-                                    f(&r.0);
-                                }
-                                None => (),
-                            };
-                            Ok(r)
-                        },
-                    )
-                };
-                Box::new(wrapped_eval)
-            }
-            None => Box::new(default_eval),
+            Some(f) => default_eval,
+            None => default_eval,
         }
     };
 
     EvalContext {
-        eval_f: eval_f,
-        eval_atom: Box::new(eval_atom_as_tree),
+        eval_f,
+        eval_atom: eval_atom_as_tree,
         apply_f: default_apply0,
         f_table: f_lookup,
         apply_fallback,
