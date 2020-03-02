@@ -43,7 +43,7 @@ impl Node {
 pub type FEval =
     Box<dyn Fn(&EvalContext, &Node, &Node, u32, u32, u8, u8) -> Result<Reduction, EvalErr>>;
 
-pub type FApply = fn(&EvalContext, &Node, &Node) -> Result<Reduction, EvalErr>;
+pub type FApply = fn(&EvalContext, &Node, &Node) -> Option<Result<Reduction, EvalErr>>;
 pub type FApplyFallback = Box<dyn Fn(&EvalContext, &Node, &Node) -> Result<Reduction, EvalErr>>;
 
 pub type PreEval = Option<Box<dyn Fn(&Node, &Node, u32, u32) -> Result<PostEval, EvalErr>>>;
@@ -53,15 +53,19 @@ pub fn default_apply0(
     eval_context: &EvalContext,
     operator: &Node,
     params: &Node,
-) -> Result<Reduction, EvalErr> {
+) -> Option<Result<Reduction, EvalErr>> {
     let op_8: Option<u8> = operator.clone().into();
     if let Some(op_8) = op_8 {
         if let Some(f) = eval_context.f_table[op_8 as usize] {
-            return f(&params);
+            return Some(f(&params));
         }
     };
 
-    (eval_context.apply_fallback)(eval_context, operator, params)
+    Some((eval_context.apply_fallback)(
+        eval_context,
+        operator,
+        params,
+    ))
 }
 
 pub fn default_eval_atom(
@@ -170,8 +174,12 @@ pub fn default_eval(
                     op_quote,
                     op_args,
                 )?;
-                let Reduction(r, apply_cost) =
-                    (eval_context.apply_f)(&eval_context, &left, &params)?;
+                let r = (eval_context.apply_f)(&eval_context, &left, &params);
+                if r.is_none() {
+                    return left.err("unknown operator");
+                }
+                let Reduction(r, apply_cost) = r.unwrap()?;
+
                 Ok(Reduction(r, apply_cost + new_cost))
             }
         }
