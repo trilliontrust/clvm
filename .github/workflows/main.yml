@@ -29,7 +29,7 @@ jobs:
         eval "$(ssh-agent -s)"
         ssh-add - <<< "${CHIA_MACHINE_SSH_KEY}"
         python -m pip install --upgrade pip
-        pip install .
+        pip install -e .
         pip install -r requirements-dev.txt
     - name: Test with pytest
       run: |
@@ -48,7 +48,7 @@ jobs:
         eval "$(ssh-agent -s)"
         ssh-add - <<< "${CHIA_MACHINE_SSH_KEY}"
         pip3 install setuptools
-        pip3 install .
+        pip3 install -e .
         pip3 install -r requirements-dev.txt
     - name: Test with pytest
       run: |
