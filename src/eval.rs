@@ -4,9 +4,7 @@ use super::sexp::Node;
 pub struct EvalContext {
     pub eval_f: FEval,
     pub eval_atom: FEval,
-    pub f_table: FLookup,
-    pub apply_f: FApply,
-    pub apply_fallback: FApplyFallback,
+    pub apply_f: Box<dyn FApply>,
 }
 
 #[derive(Debug, Clone)]
@@ -43,30 +41,8 @@ impl Node {
 pub type FEval =
     Box<dyn Fn(&EvalContext, &Node, &Node, u32, u32, u8, u8) -> Result<Reduction, EvalErr>>;
 
-pub type FApply = fn(&EvalContext, &Node, &Node) -> Option<Result<Reduction, EvalErr>>;
-pub type FApplyFallback = Box<dyn Fn(&EvalContext, &Node, &Node) -> Result<Reduction, EvalErr>>;
-
 pub type PreEval = Option<Box<dyn Fn(&Node, &Node, u32, u32) -> Result<PostEval, EvalErr>>>;
 pub type PostEval = Option<Box<dyn Fn(&Node) -> ()>>;
-
-pub fn default_apply0(
-    eval_context: &EvalContext,
-    operator: &Node,
-    params: &Node,
-) -> Option<Result<Reduction, EvalErr>> {
-    let op_8: Option<u8> = operator.clone().into();
-    if let Some(op_8) = op_8 {
-        if let Some(f) = eval_context.f_table[op_8 as usize] {
-            return Some(f(&params));
-        }
-    };
-
-    Some((eval_context.apply_fallback)(
-        eval_context,
-        operator,
-        params,
-    ))
-}
 
 pub fn default_eval_atom(
     _eval_context: &EvalContext,
@@ -174,7 +150,7 @@ pub fn default_eval(
                     op_quote,
                     op_args,
                 )?;
-                let r = (eval_context.apply_f)(&eval_context, &left, &params);
+                let r = eval_context.apply_f.apply(&eval_context, &left, &params);
                 if r.is_none() {
                     return left.err("unknown operator");
                 }
@@ -216,17 +192,63 @@ fn eval_params(
     Ok(Reduction(Node::from_list(vec), new_cost))
 }
 
-pub fn default_apply_fallback(
-    _eval_context: &EvalContext,
-    operator: &Node,
-    _args: &Node,
-) -> Result<Reduction, EvalErr> {
-    operator.err("unknown operator")
+pub trait FApply {
+    fn apply(
+        &self,
+        eval_context: &EvalContext,
+        operator: &Node,
+        args: &Node,
+    ) -> Option<Result<Reduction, EvalErr>>;
+}
+
+pub struct SequentialApplies {
+    apply_list: Vec<Box<dyn FApply>>,
+}
+
+pub fn make_sequential_applies<'a>(apply_f_list: Vec<Box<dyn FApply>>) -> SequentialApplies {
+    return SequentialApplies {
+        apply_list: apply_f_list,
+    };
+}
+
+impl FApply for SequentialApplies {
+    fn apply(
+        &self,
+        eval_context: &EvalContext,
+        operator: &Node,
+        args: &Node,
+    ) -> Option<Result<Reduction, EvalErr>> {
+        for apply_f in self.apply_list.iter() {
+            let r = apply_f.apply(eval_context, operator, args);
+            if r.is_some() {
+                return r;
+            }
+        }
+        None
+    }
+}
+
+pub struct FTableApply {
+    f_table: FLookup,
+}
+
+impl FApply for FTableApply {
+    fn apply(
+        &self,
+        _eval_context: &EvalContext,
+        operator: &Node,
+        args: &Node,
+    ) -> Option<Result<Reduction, EvalErr>> {
+        let op_8: Option<u8> = operator.clone().into();
+        let op_8 = op_8?;
+        let f = self.f_table[op_8 as usize]?;
+        Some(f(&args))
+    }
 }
 
 pub fn make_default_eval_context(
     f_lookup: FLookup,
-    apply_fallback: FApplyFallback,
+    apply_fallback: Box<dyn FApply>,
     pre_eval: PreEval,
 ) -> EvalContext {
     let eval_f: FEval = {
@@ -269,12 +291,13 @@ pub fn make_default_eval_context(
         }
     };
 
+    let f1 = Box::new(FTableApply { f_table: f_lookup });
+    let apply_f: Box<dyn FApply> = Box::new(make_sequential_applies(vec![f1, apply_fallback]));
+
     EvalContext {
         eval_f: eval_f,
         eval_atom: Box::new(eval_atom_as_tree),
-        apply_f: default_apply0,
-        f_table: f_lookup,
-        apply_fallback,
+        apply_f: apply_f,
     }
 }
 
@@ -284,7 +307,7 @@ pub fn run_program(
     current_cost: u32,
     max_cost: u32,
     f_table: &FLookup,
-    apply_fallback: FApplyFallback,
+    apply_fallback: Box<dyn FApply>,
     pre_eval: PreEval,
     op_quote: u8,
     op_args: u8,

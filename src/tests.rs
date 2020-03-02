@@ -1,7 +1,7 @@
 use hex;
 
 use super::eval::run_program;
-use super::eval::{EvalContext, EvalErr, Reduction};
+use super::eval::{EvalContext, EvalErr, FApply, Reduction};
 use super::f_table::make_f_lookup;
 use super::number::Number;
 use super::serialize::node_from_stream;
@@ -10,6 +10,25 @@ use super::sexp::Node;
 use std::io::Cursor;
 use std::io::{Seek, SeekFrom, Write};
 
+pub struct CustomApply {}
+
+impl FApply for CustomApply {
+    fn apply(
+        &self,
+        eval_context: &EvalContext,
+        operator: &Node,
+        args: &Node,
+    ) -> Option<Result<Reduction, EvalErr>> {
+        if let Some(blob) = operator.as_blob() {
+            if let Ok(s) = String::from_utf8(blob.into()) {
+                if s.eq_ignore_ascii_case("com") {
+                    return Some(Ok(Node::blob("bwa ha ha").into()));
+                }
+            }
+        }
+        None
+    }
+}
 
 pub fn fallback_apply(
     _eval_context: &EvalContext,
@@ -103,7 +122,7 @@ fn do_run_program(form: &Node, env: &Node) -> Node {
         0,
         100_000,
         &f_table,
-        Box::new(da),
+        Box::new(CustomApply {}),
         None,
         op_quote,
         op_args,

@@ -1,5 +1,5 @@
 use super::eval::Reduction;
-use super::eval::{run_program, EvalErr, FApplyFallback, PostEval, PreEval};
+use super::eval::{run_program, EvalContext, EvalErr, FApply, PostEval, PreEval};
 use super::f_table::make_f_lookup;
 use super::serialize::{node_from_stream, node_to_stream};
 use super::sexp::Node;
@@ -41,12 +41,44 @@ fn wrap_py_post_eval(py: Python<'static>, py_post_eval: PyObject) -> PostEval {
     }
 }
 
+struct PyWrapApply {
+    py: Python<'static>,
+    apply_f: PyObject,
+}
+
+impl PyWrapApply {
+    fn inner_apply(
+        &self,
+        _eval_context: &EvalContext,
+        operator: &Node,
+        args: &Node,
+    ) -> Result<Reduction, EvalErr> {
+        let byte_vec: Vec<u8> = self
+            .apply_f
+            .call1(self.py, (node_to_bytes(&operator)?, node_to_bytes(&args)?))?
+            .extract(self.py)?;
+        let bytes: &[u8] = &byte_vec;
+        Ok(Reduction(node_from_bytes(bytes)?, 1000))
+    }
+}
+
+impl FApply for PyWrapApply {
+    fn apply(
+        &self,
+        eval_context: &EvalContext,
+        operator: &Node,
+        args: &Node,
+    ) -> Option<Result<Reduction, EvalErr>> {
+        Some(self.inner_apply(eval_context, operator, args))
+    }
+}
+
 #[pyfunction]
 fn do_eval(
     py: Python<'static>,
     form_u8: &PyBytes,
     env_u8: &PyBytes,
-    apply3: PyObject,
+    apply_f: PyObject,
     py_pre_eval: PyObject,
     op_quote: u8,
     op_args: u8,
@@ -54,15 +86,7 @@ fn do_eval(
     let sexp = node_from_bytes(form_u8.as_bytes())?;
     let env = node_from_bytes(env_u8.as_bytes())?;
     let f_table = make_f_lookup();
-    let py_apply: FApplyFallback = Box::new(
-        move |_eval_context, sexp, args| -> Result<Reduction, EvalErr> {
-            let byte_vec: Vec<u8> = apply3
-                .call1(py, (node_to_bytes(&sexp)?, node_to_bytes(&args)?))?
-                .extract(py)?;
-            let bytes: &[u8] = &byte_vec;
-            Ok(Reduction(node_from_bytes(bytes)?, 1000))
-        },
-    );
+    let py_apply: Box<dyn FApply> = Box::new(PyWrapApply { py, apply_f });
 
     let pre_eval: PreEval = {
         if py_pre_eval.is_none() {
