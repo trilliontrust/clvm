@@ -96,7 +96,15 @@ class BaseSExp:
             other = self.to(other)
         except ValueError:
             return False
-        return other.v == self.v
+        if self.listp() != other.listp():
+            return False
+        if self.listp():
+            pair = self.as_pair()
+            if other.listp():
+                other_pair = other.as_pair()
+                return pair[0] == other_pair[0] and pair[1] == other_pair[1]
+            return False
+        return self.as_atom() == other.as_atom()
 
     def as_python(self):
         if isinstance(self.v, self.ATOM_TYPES):
