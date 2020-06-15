@@ -107,11 +107,18 @@ class BaseSExp:
         return self.as_atom() == other.as_atom()
 
     def as_python(self):
-        if isinstance(self.v, self.ATOM_TYPES):
-            return self.v
-        if self.is_legit_list():
-            return list(_.as_python()for _ in self.as_iter())
-        return tuple((self.first().as_python(), self.rest().as_python()))
+        if not self.listp():
+            return self.as_atom()
+
+        left, right = self.as_pair()
+        r = [left.as_python()]
+        while right.listp():
+            left, right = right.as_pair()
+            r.append(left.as_python())
+            if right.nullp():
+                return r
+        r[-1] = (r[-1], right.as_python())
+        return r
 
     def __str__(self):
         return str(self.as_python())
